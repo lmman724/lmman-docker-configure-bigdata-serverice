@@ -29,84 +29,76 @@ services:
     depends_on:
       - namenode
     ports:
-      - "50075:50075"
-    # networks:
-    #   net_pet:
-    #     ipv4_address: 172.27.1.6
+      - "50078:50078"
+
   
-  hive-server:
-    image: bde2020/hive:2.3.2-postgresql-metastore
-    container_name: hive-server
-    env_file:
-      - ./hadoop-hive.env
-    environment:
-      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
-      SERVICE_PRECONDITION: "hive-metastore:9083"
-    ports:
-      - "10000:10000"
-    depends_on:
-      - hive-metastore
-    # networks:
-    #   net_pet:
-    #     ipv4_address: 172.27.1.7
+  # hive-server:
+  #   image: bde2020/hive:2.3.2-postgresql-metastore
+  #   container_name: hive-server
+  #   env_file:
+  #     - ./hadoop-hive.env
+  #   environment:
+  #     HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+  #     SERVICE_PRECONDITION: "hive-metastore:9083"
+  #   ports:
+  #     - "10000:10000"
+  #   depends_on:
+  #     - hive-metastore
+  #   # networks:
+  #   #   net_pet:
+  #   #     ipv4_address: 172.27.1.7
   
-  hive-metastore:
-    image: bde2020/hive:2.3.2-postgresql-metastore
-    container_name: hive-metastore
-    env_file:
-      - ./hadoop-hive.env
-    command: /opt/hive/bin/hive --service metastore
-    environment:
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
-    ports:
-      - "9083:9083"
-    depends_on:
-      - hive-metastore-postgresql
-    # networks:
-    #   net_pet:
-    #     ipv4_address: 172.27.1.8
+  # hive-metastore:
+  #   image: bde2020/hive:2.3.2-postgresql-metastore
+  #   container_name: hive-metastore
+  #   env_file:
+  #     - ./hadoop-hive.env
+  #   command: /opt/hive/bin/hive --service metastore
+  #   environment:
+  #     SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+  #   ports:
+  #     - "9083:9083"
+  #   depends_on:
+  #     - hive-metastore-postgresql
+  #   # networks:
+  #   #   net_pet:
+  #   #     ipv4_address: 172.27.1.8
   
-  hive-metastore-postgresql:
-    image: bde2020/hive-metastore-postgresql:2.3.0
-    container_name: hive-metastore-postgresql
-    depends_on:
-      - datanode
-    # networks:
-    #   net_pet:
-    #     ipv4_address: 172.27.1.9
+  # hive-metastore-postgresql:
+  #   image: bde2020/hive-metastore-postgresql:2.3.0
+  #   container_name: hive-metastore-postgresql
+  #   depends_on:
+  #     - datanode
+  #   # networks:
+  #   #   net_pet:
+  #   #     ipv4_address: 172.27.1.9
     
-#   spark-master:
-#     image: bde2020/spark-master:2.4.0-hadoop2.7
-#     container_name: spark-master
-#     ports:
-#       - 8080:8080
-#       - 7077:7077
-#     environment:
-#       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-#     env_file:
-#       - ./hadoop-hive.env
-#     networks:
-#       net_pet:
-#         ipv4_address: 172.27.1.10
+  spark-master:
+    image: bde2020/spark-master:2.4.0-hadoop2.7
+    container_name: spark-master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+    env_file:
+      - ./hadoop-hive.env
      
-#   spark-worker:
-#     image: bde2020/spark-worker:2.4.0-hadoop2.7
-#     container_name: spark-worker
-#     depends_on:
-#       - spark-master
-#     environment:
-#       - SPARK_MASTER=spark://spark-master:7077
-#       - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-#       - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore
-#     depends_on:
-#       - spark-master
-#     ports:
-#       - 8081:8081
-#     env_file:
-#       - ./hadoop-hive.env
-#     networks:
-#       net_pet:
-#         ipv4_address: 172.27.1.11
+  spark-worker:
+    image: bde2020/spark-worker:2.4.0-hadoop2.7
+    container_name: spark-worker
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+      - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore
+    depends_on:
+      - spark-master
+    ports:
+      - 8081:8081
+    env_file:
+      - ./hadoop-hive.env
 
 #   # zeppelin:
 #   #   image: openkbs/docker-spark-bde2020-zeppelin
@@ -132,47 +124,41 @@ services:
 #   #     net_pet:
 #   #       ipv4_address: 172.27.1.12
 
-  hue:
-      image: gethue/hue:20191107-135001
-      hostname: hue
-      container_name: hue
-      # dns: 8.8.8.8
-      ports:
-      - "8888:8888"
-      volumes:
-        - ./hue.ini:/usr/share/hue/desktop/conf/hue.ini
-      depends_on:
-      - "database"
-      # networks:
-      #   net_pet:
-      #     ipv4_address: 172.27.1.13
-  
-  database:
-      image: mysql:5.7
-      container_name: database
-      ports:
-          - "3306:3306"
-      command: --init-file /data/application/init.sql
-      volumes:
-          - /tmp/mysql/data:/var/lib/mysql
-          - ./init.sql:/data/application/init.sql
-      environment:
-          MYSQL_ROOT_USER: root
-          MYSQL_ROOT_PASSWORD: man123456@
-          MYSQL_DATABASE: hue
-          MYSQL_USER: lmman
-          MYSQL_PASSWORD: man123456@
-      # networks:
-      #   net_pet:
-      #     ipv4_address: 172.27.1.14
+  # hue:
+  #   image: gethue/hue:20191107-135001
+  #   hostname: hue
+  #   container_name: hue
+  #   ports:
+  #     - "8888:8888"
+  #   volumes:
+  #     - ./hue.ini:/usr/share/hue/desktop/conf/hue.ini
+  #   depends_on:
+  #     - "database"
 
-#   zookeeper:
-#     image: wurstmeister/zookeeper:3.4.6
-#     ports:
-#       - "2181:2181"
-#     networks:
-#       net_pet:
-#         ipv4_address: 172.27.1.15
+  
+  # database:
+  #     image: mysql:5.7
+  #     container_name: database
+  #     ports:
+  #         - "3306:3306"
+  #     command: --init-file /data/application/init.sql
+  #     volumes:
+  #         - /tmp/mysql/data:/var/lib/mysql
+  #         - ./init.sql:/data/application/init.sql
+  #     environment:
+  #         MYSQL_ROOT_USER: root
+  #         MYSQL_ROOT_PASSWORD: man123456@
+  #         MYSQL_DATABASE: hue
+  #         MYSQL_USER: lmman
+  #         MYSQL_PASSWORD: man123456@
+
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    ports:
+      - "2181:2181"
+    # networks:
+    #   net_pet:
+    #     ipv4_address: 172.27.1.15
 
 #   kafka:
 #     image: wurstmeister/kafka:2.12-2.3.0

@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  hue:
+    image: gethue/hue
+    container_name: hue
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./hue.ini:/usr/share/hue/desktop/conf/hue.ini
+    environment:
+      - HUE_IGNORE_PASSWORD_SCRIPT_ERRORS=true
+    # depends_on:
+    #   - hive-metastore
+    #   - hive-server2
+  # hive-metastore:
+  #   image: bde2020/hive-metastore:2.3.7-postgresql-metastore
+  #   container_name: hive-metastore
+  #   environment:
+  #     - "POSTGRES_USER=metastore"
+  #     - "POSTGRES_PASSWORD=metastore"
+  #     - "POSTGRES_DB=metastore"
+  #     - "HIVE_METASTORE_HOST=hive-metastore"
+  #   volumes:
+  #     - ./hive-metastore:/var/lib/postgresql/data
+  #   ports:
+  #     - "9083:9083"
+  # hive-metastore:
+  #     image: bde2020/hive:2.3.2-postgresql-metastore
+  #     container_name: hive-metastore
+  #     # env_file:
+  #     #   - ./hadoop-hive.env
+  #     # command: /opt/hive/bin/hive --service metastore
+  #     environment:
+  #       - "POSTGRES_USER=metastore"
+  #       - "POSTGRES_PASSWORD=metastore"
+  #       - "POSTGRES_DB=metastore"
+  #       - "HIVE_METASTORE_HOST=hive-metastore"
+  #     ports:
+  #       - "9083:9083"
+  #     volumes:
+  #       - ./hive-metastore:/var/lib/postgresql/data
+
+  # hive-server2:
+  #   image: bde2020/hive:2.3.2-postgresql-metastore
+  #   container_name: hive-server2
+  #   environment:
+  #     - "HADOOP_USER_NAME=hive"
+  #     - "HIVE_CONF_derby_database_connection_url=jdbc:derby:;databaseName=/tmp/metastore_db;create=true"
+  #     - "HIVE_CONF_hive_metastore_uris=thrift://hive-metastore:9083"
+  #   depends_on:
+  #     - hive-metastore
+  #   ports:
+  #     - "11000:11000"

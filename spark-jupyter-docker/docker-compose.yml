@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  spark:
+    image: "apache/spark"
+    ports:
+      - "4040:4040"
+    environment:
+      - SPARK_LOCAL_IP=127.0.0.1
+      - SPARK_DRIVER_HOST=127.0.0.1
+
+  jupyter:
+    image: "jupyter/pyspark-notebook:latest"
+    ports:
+      - "8888:8888"
+    depends_on:
+      - spark
+    environment:
+      - SPARK_MASTER_URL=spark://spark:7077
